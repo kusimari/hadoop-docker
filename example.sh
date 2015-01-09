@@ -2,9 +2,7 @@ NN=10.0.1.1
 RM=10.0.1.2
 S1=10.0.1.3
 S2=10.0.1.4
-S3=10.0.1.5
-CLIENT=10.0.1.6
-Ss=$(echo $S1,$S2,$S3)
+Ss=$(echo $S1,$S2)
 
 CIDs=""
 
@@ -27,14 +25,16 @@ C=$(boot2docker ssh "sudo ./weave run $S2/16 -it -e "NAMENODE=$NN" -e "RESOURCEM
 echo "Slave started: $C"
 CIDs=$(echo $CIDs $C)
 
-C=$(boot2docker ssh "sudo ./weave run $S3/16 -it -e "NAMENODE=$NN" -e "RESOURCEMANAGER=$RM" -e "SLAVES=$Ss" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -slave")
-echo "Slave started: $C"
-CIDs=$(echo $CIDs $C)
+#DONE
+echo "Exporting YARN_CONTAINERS: $CIDs"
+export YARN_CONTAINERS=$CIDs
 
-echo "All YARN Containers: $CIDs"
+
+#INITIALIZE
+# docker attach $(boot2docker ssh "sudo ./weave run 10.0.1.50/16 -it -e "NAMENODE=10.0.1.1" -e "RESOURCEMANAGER=10.0.1.2" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -init")
 
 #CLIENT NODE
-C=$(boot2docker ssh "sudo ./weave run $CLIENT/16 -it -e "NAMENODE=$NN" -e "RESOURCEMANAGER=$RM" -e "SLAVES=$Ss" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -dummy")
-echo "Client Container: $C"
+# docker attach $(boot2docker ssh "sudo ./weave run 10.0.1.50/16 -it -e "NAMENODE=10.0.1.1" -e "RESOURCEMANAGER=10.0.1.2" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -client")
 
-
+#IPYTHON SPARK NODE
+# TODO:

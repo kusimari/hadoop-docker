@@ -31,22 +31,31 @@ echo $SLAVES | tr "," "\n" >> $HADOOP_CONF_DIR/slaves
 
 
 if [[ $1 == "-namenode" ]]; then
+    #DO ONLY IF STARTING FROM SCRATCH
     $HADOOP_PREFIX/bin/hdfs namenode -format;
     $HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode;
 fi
 
+
 if [[ $1 == "-resourcemanager" ]]; then
     $HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start resourcemanager;
 fi
+
 
 if [[ $1 == "-slave" ]]; then
     $HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start datanode;
     $HADOOP_PREFIX/sbin/hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start nodemanager;
 fi
 
-if [[$1 == "-dummy" ]]; then
-    echo "Dummy test node"
-    #do nothing
+
+if [[ $1 == "-init" ]]; then
+    $HADOOP_PREFIX/bin/hdfs dfs -mkdir /user;
+    $HADOOP_PREFIX/bin/hdfs dfs -mkdir /user/spark;
+fi
+
+
+if [[ $1 == "-client" ]]; then
+    echo "Dummy test node";
 fi
 
 /bin/bash

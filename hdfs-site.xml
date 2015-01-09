@@ -1,6 +1,12 @@
 <configuration>
-    <property>
-        <name>dfs.datanote.data.dir</name>
-        <value>/hdfs-data/</value>
-    </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>/hdfs-meta/</value>
+    <final>true</final>
+  </property>
+
+  <property>
+    <name>dfs.datanode.data.dir</name>
+    <value>/hdfs-data/</value>
+  </property>
 </configuration>

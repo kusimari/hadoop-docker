@@ -45,8 +45,6 @@ ADD core-site.xml $HADOOP_CONF_DIR/core-site.xml.template
 ADD yarn-site.xml $HADOOP_CONF_DIR/yarn-site.xml.template
 ADD slaves $HADOOP_CONF_DIR/slaves
 
-EXPOSE 50020 50090 50070 50010 50075 8031 8032 8033 8040 8042 49707 22 8088 8030 8020
-
 
 # launch script ##########################################################################
 ADD bootstrap.sh /etc/bootstrap.sh
