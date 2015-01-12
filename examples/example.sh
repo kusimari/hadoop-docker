@@ -4,37 +4,34 @@ S1=10.0.1.3
 S2=10.0.1.4
 Ss=$(echo $S1,$S2)
 
-CIDs=""
+IMAGE="kusimari/hadoop-docker:2.6.0-alpha"
 
-#NAMENODE
-C=$(boot2docker ssh "sudo ./weave run $NN/16 -it -e "NAMENODE=$NN" -e "RESOURCEMANAGER=$RM" -e "SLAVES=$Ss" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -namenode")
-echo "Namenode started: $C"
-CIDs=$(echo $CIDs $C)
+if [[ $1 == "-namenode" ]]; then
+    HOSTNAME=$NN;
+    CMD=$1
+fi
+if [[ $1 == "-resourcemanager" ]]; then
+    HOSTNAME=$RM
+    CMD=$1
+fi
+if [[ $1 == "-slave1" ]]; then
+    HOSTNAME=$S1
+    CMD="-slave"
+fi
+if [[ $1 == "-slave2" ]]; then
+    HOSTNAME=$S2
+    CMD="-slave"
+fi
+if [[ $1 == "-init" ]]; then
+    HOSTNAME=10.0.1.50
+    CMD="-init"
+fi
+if [[ $1 == "-client" ]]; then
+    HOSTNAME=10.0.1.51
+    CMD="-client"
+fi
 
-#RESOURCEMANAGER
-C=$(boot2docker ssh "sudo ./weave run $RM/16 -it -e "NAMENODE=$NN" -e "RESOURCEMANAGER=$RM" -e "SLAVES=$Ss" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -resourcemanager")
-echo "Resource manager started: $C"
-CIDs=$(echo $CIDs $C)
 
-#SLAVES
-C=$(boot2docker ssh "sudo ./weave run $S1/16 -it -e "NAMENODE=$NN" -e "RESOURCEMANAGER=$RM" -e "SLAVES=$Ss" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -slave")
-echo "Slave started: $C"
-CIDs=$(echo $CIDs $C)
+#sudo weave run $HOSTNAME/16 -it -h=$HOSTNAME -e NAMENODE=$NN -e RESOURCEMANAGER=$RM  -e SLAVES=$Ss $IMAGE /etc/bootstrap.sh $CMD
 
-C=$(boot2docker ssh "sudo ./weave run $S2/16 -it -e "NAMENODE=$NN" -e "RESOURCEMANAGER=$RM" -e "SLAVES=$Ss" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -slave")
-echo "Slave started: $C"
-CIDs=$(echo $CIDs $C)
-
-#DONE
-echo "Exporting YARN_CONTAINERS: $CIDs"
-export YARN_CONTAINERS=$CIDs
-
-
-#INITIALIZE
-# docker attach $(boot2docker ssh "sudo ./weave run 10.0.1.50/16 -it -e "NAMENODE=10.0.1.1" -e "RESOURCEMANAGER=10.0.1.2" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -init")
-
-#CLIENT NODE
-# docker attach $(boot2docker ssh "sudo ./weave run 10.0.1.50/16 -it -e "NAMENODE=10.0.1.1" -e "RESOURCEMANAGER=10.0.1.2" kusimari/hadoop-docker:v1 /etc/bootstrap.sh -client")
-
-#IPYTHON SPARK NODE
-# TODO:
+sudo weave run $HOSTNAME/16 -it -e NAMENODE=$NN -e RESOURCEMANAGER=$RM  -e SLAVES=$Ss $IMAGE /etc/bootstrap.sh $CMD
